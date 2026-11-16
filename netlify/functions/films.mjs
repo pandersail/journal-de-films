@@ -5,15 +5,21 @@ const store = () => getStore({ name: "journal", region: "eu-central-1", consiste
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json", "cache-control": "no-store" } });
 
+// Sans EDIT_KEY configurée sur Netlify, toute écriture est refusée (on ne laisse jamais le journal ouvert).
 function allowed(req) {
   const key = Netlify.env.get("EDIT_KEY");
-  return !key || req.headers.get("x-edit-key") === key;
+  return Boolean(key) && req.headers.get("x-edit-key") === key;
 }
+
+// Tag de l'import en attente (public/lbx-import.json). Une fois appliqué, on ne relit plus le fichier.
+// Pour un futur import : déposer le nouveau fichier et mettre son tag ici.
+const IMPORT_TAG = "letterboxd-2026-11-16";
 
 const norm = (s) => (s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 
 // Applique une seule fois un fichier d'import (public/lbx-import.json) aux données en ligne.
 async function applyImport(state, req) {
+  if ((state.imports || []).includes(IMPORT_TAG)) return state;
   let imp;
   try {
     const res = await fetch(new URL("/lbx-import.json", req.url), { cache: "no-store" });
