@@ -15,6 +15,10 @@ export default async (req) => {
     const state = await store().get("state", { type: "json" });
     return state === null ? json({ empty: true }, 404) : json(state);
   }
+  if (req.method === "POST") {
+    // vérifie le code de modification sans rien écrire
+    return new Response(null, { status: allowed(req) ? 204 : 401 });
+  }
   if (req.method === "PUT") {
     if (!allowed(req)) return json({ error: "Code de modification incorrect" }, 401);
     let body;
