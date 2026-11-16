@@ -19,7 +19,6 @@ Live site: https://journal-de-films.netlify.app
 
 ```
 public/index.html            single-page app (vanilla HTML/CSS/JS, no framework, no build step)
-public/lbx-import.json       one-off import file (Letterboxd)
 netlify/functions/films.mjs  GET / PUT /api/films     journal data
 netlify/functions/poster.mjs GET / PUT / DELETE /api/poster/:id   poster images
 ```
@@ -38,9 +37,12 @@ Anyone can read the journal. Writing (saving films, uploading or deleting poster
 
 ## Importing data
 
+The Letterboxd import has already been applied and its file removed. For a new import:
+
 1. Put the import file in `public/lbx-import.json` with a new `tag`.
 2. Set `IMPORT_TAG` in `netlify/functions/films.mjs` to the same tag.
 3. Deploy. The import is applied on the next page load, once only, after a backup.
+4. Once confirmed, delete the file.
 
 ## Local development
 

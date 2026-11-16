@@ -11,7 +11,7 @@ function allowed(req) {
   return Boolean(key) && req.headers.get("x-edit-key") === key;
 }
 
-// Tag de l'import en attente (public/lbx-import.json). Une fois appliqué, on ne relit plus le fichier.
+// Tag du dernier import (public/lbx-import.json). Une fois appliqué, on ne relit plus le fichier.
 // Pour un futur import : déposer le nouveau fichier et mettre son tag ici.
 const IMPORT_TAG = "letterboxd-2026-11-16";
 
