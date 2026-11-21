@@ -4,9 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Hors-champ</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237030a0'/%3E%3Ctext x='32' y='48' text-anchor='middle' font-family='Merriweather,Georgia,serif' font-weight='900' font-size='46' fill='%23fff'%3Eh%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Merriweather:wght@300;900&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* Layout: une colonne de cartes, filtres collants en haut, liste/affiches en bas, fiche film en tiroir. */
 :root{
@@ -37,7 +38,8 @@ button{font-family:var(--body)}
 header{display:flex;justify-content:space-between;gap:12px;align-items:flex-end;flex-wrap:wrap}
 header .status{font-size:12px;margin-top:2px}
 header h1{font-family:var(--display);font-weight:400;font-size:clamp(36px,8vw,56px);line-height:1;margin:0;text-wrap:balance;letter-spacing:-.01em}
-header h1 em{color:var(--r5)}
+header h1.logo{font-family:"Merriweather",Georgia,"Times New Roman",serif;font-weight:300;font-size:clamp(32px,7vw,48px);color:var(--r5);letter-spacing:-.02em}
+header h1.logo b{font-weight:900}
 header p{margin:6px 0 0;color:var(--muted);font-size:14px}
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
@@ -99,6 +101,13 @@ section.card{background:var(--panel);border:1px solid var(--line);border-radius:
 .insights{display:grid;gap:10px;margin-top:18px}
 .ins{border-left:3px solid var(--line);padding:2px 0 2px 10px;font-size:13px;color:var(--muted)}
 .ins b{display:block;color:var(--ink);font-size:15px}
+.card h3.h3{font-family:var(--display);font-weight:400;font-size:22px;margin:0 0 10px;line-height:1.1}
+.enr{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 16px;font-size:13px;color:var(--muted)}
+.enr .btn{padding:8px 12px;font-size:13px}
+.tabs{margin:0 0 12px}
+.wdl{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.wdl a{color:var(--r5)}
+.wdl .btn{padding:7px 10px;font-size:13px}
 
 .lhead{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
 .lhead input{flex:1 1 200px;min-width:0;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:10px 12px;font:500 15px var(--body)}
@@ -173,7 +182,7 @@ ul.films li:first-child{border-top:0}
 <div class="wrap">
   <header id="top">
     <div>
-      <h1>Hors-champ</h1>
+      <h1 class="logo">hors-<b>champ</b></h1>
       <p id="subtitle"></p>
       <p class="status" id="saveStatus"></p>
     </div>
@@ -185,6 +194,7 @@ ul.films li:first-child{border-top:0}
     <div class="row" id="fYears" aria-label="Année de visionnage"></div>
     <div class="row" id="fRates" aria-label="Notes"></div>
     <div class="row" id="fTypes" aria-label="Type"></div>
+    <div class="row" id="fDecs" aria-label="Décennie de sortie"></div>
     <div class="active" id="fActive"></div>
   </div>
 
@@ -217,16 +227,47 @@ ul.films li:first-child{border-top:0}
     <p class="sub" id="decSub"></p>
     <div class="months decades" id="decades"></div>
     <div class="legend" id="legend"></div>
+    <h2 style="font-size:22px;margin-top:22px">Décennies les mieux notées</h2>
+    <p class="sub">Note moyenne de 1 (rouge) à 5 (violet), pour les décennies avec au moins 5 films notés.</p>
+    <div class="hbars" id="decBest"></div>
   </section>
+
+  <section class="card" id="sec-gens">
+    <h2>Cinéastes et acteurs</h2>
+    <p class="sub">Les plus vus dans la sélection. Touche un nom pour filtrer.</p>
+    <div class="enr" id="enr"></div>
+    <div class="grid2">
+      <div><h3 class="h3">Cinéastes</h3><div class="hbars" id="dirs"></div></div>
+      <div><h3 class="h3">Acteurs et actrices</h3><div class="hbars" id="cast"></div></div>
+    </div>
+  </section>
+
+  <div class="grid2">
+    <section class="card" id="sec-pays">
+      <h2>Pays de production</h2>
+      <p class="sub">Une coproduction compte pour chaque pays.</p>
+      <div class="hbars" id="countries"></div>
+    </section>
+    <section class="card" id="sec-themes">
+      <h2>Sous-genres et thèmes</h2>
+      <p class="sub">Plus fin que le genre : film noir, drame psychologique, Seconde Guerre mondiale…</p>
+      <div class="seg tabs" role="group" aria-label="Sous-genres ou thèmes">
+        <button type="button" id="tSg" aria-pressed="true">Sous-genres</button>
+        <button type="button" id="tTh" aria-pressed="false">Thèmes</button>
+      </div>
+      <div class="hbars" id="tags"></div>
+    </section>
+  </div>
 
   <section class="card" id="sec-liste">
     <h2>La liste</h2>
     <div class="lhead">
-      <input id="q" type="search" placeholder="Chercher un titre ou un commentaire…" aria-label="Chercher">
+      <input id="q" type="search" placeholder="Titre, cinéaste, acteur, commentaire…" aria-label="Chercher">
       <select id="sort" aria-label="Trier">
         <option value="date">Plus récents</option>
         <option value="rate">Mieux notés</option>
-        <option value="release">Année de sortie</option>
+        <option value="release_desc">Sortie : plus récents</option>
+        <option value="release">Sortie : plus anciens</option>
         <option value="title">A → Z</option>
       </select>
       <div class="seg" role="group" aria-label="Affichage">
@@ -244,12 +285,14 @@ ul.films li:first-child{border-top:0}
     <h2>À voir</h2>
     <p class="sub" id="wlSub"></p>
     <div class="lhead">
-      <input id="wq" type="search" placeholder="Chercher dans la liste à voir…" aria-label="Chercher dans la liste à voir">
+      <input id="wq" type="search" placeholder="Titre ou année de sortie…" aria-label="Chercher dans la liste à voir">
       <select id="wsort" aria-label="Trier la liste à voir">
         <option value="added">Derniers ajoutés</option>
+        <option value="release_desc">Sortie : plus récents</option>
+        <option value="release">Sortie : plus anciens</option>
         <option value="title">A → Z</option>
-        <option value="release">Année de sortie</option>
       </select>
+      <select id="wdec" aria-label="Décennie de sortie"></select>
     </div>
     <div class="wadd">
       <input id="wT" type="text" placeholder="Titre à ajouter" aria-label="Titre à ajouter" autocomplete="off">
@@ -310,6 +353,23 @@ ul.films li:first-child{border-top:0}
       <datalist id="genreList"></datalist>
     </div>
     <div class="f">
+      <label for="sDir">Réalisation</label>
+      <input id="sDir" type="text" autocomplete="off" placeholder="Séparés par des virgules">
+    </div>
+    <div class="f">
+      <label for="sCast">Casting</label>
+      <input id="sCast" type="text" autocomplete="off" placeholder="Séparés par des virgules">
+    </div>
+    <div class="fr2">
+      <div class="f"><label for="sCo">Pays</label><input id="sCo" type="text" autocomplete="off"></div>
+      <div class="f"><label for="sSg">Sous-genres</label><input id="sSg" type="text" autocomplete="off"></div>
+    </div>
+    <div class="f">
+      <label for="sTh">Thèmes</label>
+      <input id="sTh" type="text" autocomplete="off">
+    </div>
+    <div class="wdl"><button class="btn" type="button" id="sWdBtn">Compléter automatiquement</button><span id="sWd"></span></div>
+    <div class="f">
       <label for="sC">Commentaire</label>
       <textarea id="sC" placeholder="Ce que j'en ai pensé…"></textarea>
     </div>
@@ -341,7 +401,7 @@ const TYPES=["Film","Série","Documentaire","Court-métrage"];
 const rc=k=>k?`var(--r${k})`:"transparent";
 const BASE=JSON.parse(document.getElementById("base-data").textContent);
 let FILMS=[],WL=[];
-const S={years:new Set(),rates:new Set([5,4,3,2,1,0]),types:new Set(),nodate:false,month:null,ym:null,genre:null,dec:null,q:"",sort:"date",shown:40,view:"list"};
+const S={years:new Set(),rates:new Set([5,4,3,2,1,0]),types:new Set(),nodate:false,month:null,ym:null,genre:null,dec:null,dir:null,cast:null,co:null,sg:null,th:null,nf:false,q:"",sort:"date",shown:40,view:"list"};
 
 /* ---------- stockage (IndexedDB, repli localStorage) ---------- */
 const KV=(()=>{let dbp=null;
@@ -386,6 +446,8 @@ function avg(a){const r=a.filter(f=>f.r);return r.length?r.reduce((s,f)=>s+f.r,0
 const fmt1=x=>x==null?"–":x.toFixed(1).replace(".",",");
 const rk=f=>f.r||0;
 const decOf=f=>f.ry?Math.floor(f.ry/10)*10:(f.dec||null);
+const FACETS=[["dir","Réalisation"],["cast","Casting"],["co","Pays"],["sg","Sous-genre"],["th","Thème"]];
+const decLab=d=>`années ${d}`;
 function dot(k){return el("span",{class:"dot"+(k?"":" r0"),style:k?`background:${rc(k)}`:null});}
 function stack(arr,horizontal){const c=countBy(arr,rk),tot=arr.length||1,box=el("div",{class:horizontal?"track":"stack"});[1,2,3,4,5,0].forEach(k=>{const n=c.get(k)||0;if(!n)return;box.append(el("span",{class:k?null:"seg0",style:`${horizontal?"width":"height"}:${n/tot*100}%;background:${rc(k)}`}));});return box;}
 function rateBreak(a){const c=countBy(a,rk);return [5,4,3,2,1,0].filter(k=>c.get(k)).map(k=>`${c.get(k)} ${RATES.find(r=>r.k===k).label.toLowerCase()}`).join(" · ");}
@@ -437,7 +499,9 @@ function pass(f,skip){
   if(skip!=="month"&&S.ym&&!(f.y===S.ym[0]&&(S.ym[1]===0?!f.m:f.m===S.ym[1])))return false;
   if(skip!=="genre"&&S.genre&&f.g!==S.genre)return false;
   if(skip!=="dec"&&S.dec!=null&&decOf(f)!==S.dec)return false;
-  if(skip!=="q"&&S.q){const q=norm(S.q);if(!norm(f.t).includes(q)&&!norm(f.c).includes(q))return false;}
+  for(const[k]of FACETS)if(skip!==k&&S[k]&&!(f[k]||[]).includes(S[k]))return false;
+  if(S.nf&&f.wd!=="")return false;
+  if(skip!=="q"&&S.q){const q=norm(S.q),hay=[f.t,f.c,...(f.dir||[]),...(f.cast||[])].map(norm).join(" | ");if(!hay.includes(q))return false;}
   return true;
 }
 const sel=skip=>FILMS.filter(f=>pass(f,skip));
@@ -459,14 +523,20 @@ function renderFilters(){
   ft.append(el("span",{class:"sep"}));
   const nd=sel("types").filter(f=>!f.m).length;
   ft.append(el("button",{class:"chip",type:"button","aria-pressed":String(S.nodate),onclick:()=>{S.nodate=!S.nodate;update();}},"Sans date",el("span",{class:"n"},String(nd))));
+  const fd=document.getElementById("fDecs");fd.replaceChildren();
+  const byD=countBy(sel("dec"),decOf),decs=[...new Set(FILMS.map(decOf).filter(Boolean))].sort();
+  fd.append(el("button",{class:"chip",type:"button","aria-pressed":String(S.dec==null),onclick:()=>{S.dec=null;update();}},"Toutes décennies"));
+  decs.forEach(d=>fd.append(el("button",{class:"chip",type:"button",title:decLab(d),"aria-pressed":String(S.dec===d),onclick:()=>{S.dec=S.dec===d?null:d;S.shown=40;update();}},String(d),el("span",{class:"n"},String(byD.get(d)||0)))));
   const fa=document.getElementById("fActive");fa.replaceChildren();const tags=[];
   if(S.ym)tags.push([`${S.ym[1]?MOL[S.ym[1]-1]:"sans date"} ${S.ym[0]}`,()=>S.ym=null]);
   if(S.month!=null)tags.push([`tous les ${MOL[S.month-1]}`,()=>S.month=null]);
   if(S.genre)tags.push([S.genre,()=>S.genre=null]);
-  if(S.dec!=null)tags.push([`années ${String(S.dec).slice(2)}`,()=>S.dec=null]);
+  if(S.dec!=null)tags.push([decLab(S.dec),()=>S.dec=null]);
+  FACETS.forEach(([k])=>{if(S[k])tags.push([S[k],()=>S[k]=null]);});
+  if(S.nf)tags.push(["fiches introuvables",()=>S.nf=false]);
   if(S.q)tags.push([`« ${S.q} »`,()=>{S.q="";document.getElementById("q").value="";}]);
   if(tags.length){fa.append("Filtres :");tags.forEach(([t,fn])=>fa.append(el("button",{class:"tag",type:"button",onclick:()=>{fn();update();}},t)));
-    if(tags.length>1)fa.append(el("button",{class:"tag",type:"button",onclick:()=>{S.ym=S.month=S.genre=S.dec=null;S.q="";document.getElementById("q").value="";update();}},"tout effacer"));}
+    if(tags.length>1)fa.append(el("button",{class:"tag",type:"button",onclick:()=>{S.ym=S.month=S.genre=S.dec=null;FACETS.forEach(([k])=>S[k]=null);S.nf=false;S.q="";document.getElementById("q").value="";update();}},"tout effacer"));}
 }
 
 function renderKpis(){
@@ -533,12 +603,38 @@ function renderDecades(){
   const lg=document.getElementById("legend");lg.replaceChildren();RATES.forEach(r=>lg.append(el("span",{},dot(r.k),r.word)));
 }
 
+function renderDecBest(){
+  const a=sel("dec"),box=document.getElementById("decBest");box.replaceChildren();
+  const rows=[...countBy(a.filter(f=>f.r),decOf)].filter(([d,n])=>d&&n>=5).map(([d,n])=>{const items=a.filter(f=>decOf(f)===d);return [d,avg(items),n,items];}).sort((x,y)=>y[1]-x[1]);
+  if(!rows.length){box.append(el("div",{class:"empty"},"Pas assez de films notés dans cette sélection."));return;}
+  rows.forEach(([d,v,n,items])=>{
+    const tr=el("div",{class:"track"},el("span",{style:`width:${Math.max(2,(v-1)/4*100)}%;background:${rc(Math.round(v))}`}));
+    const b=el("button",{type:"button",class:"bar"+(S.dec===d?" on":"")+(S.dec!=null&&S.dec!==d?" dim":"")},el("span",{class:"lab"},"Années "+d),tr,el("span",{class:"v"},fmt1(v)));
+    withTip(b,`Années ${d} : moyenne ${fmt1(v)} sur ${n} films notés · ${rateBreak(items)}`);
+    b.addEventListener("click",()=>{S.dec=S.dec===d?null:d;S.shown=40;update();});box.append(b);});
+}
+function renderTop(boxId,k,limit){
+  const a=sel(k),c=new Map();a.forEach(f=>(f[k]||[]).forEach(v=>c.set(v,(c.get(v)||0)+1)));
+  let rows=[...c].sort((x,y)=>y[1]-x[1]||x[0].localeCompare(y[0],"fr")).slice(0,limit);
+  if(S[k]&&!rows.some(r=>r[0]===S[k])&&c.has(S[k]))rows=[...rows.slice(0,limit-1),[S[k],c.get(S[k])]];
+  const box=document.getElementById(boxId);box.replaceChildren();
+  if(!rows.length){box.append(el("div",{class:"empty"},FILMS.some(f=>f.wd)?"Rien dans cette sélection.":"Pas encore de données : lance « Compléter les fiches »."));return;}
+  const mx=rows[0][1];
+  rows.forEach(([v,n])=>{const items=a.filter(f=>(f[k]||[]).includes(v)),tr=stack(items,true);tr.style.width=(n/mx*100)+"%";
+    const b=el("button",{type:"button",class:"bar"+(S[k]===v?" on":"")+(S[k]&&S[k]!==v?" dim":"")},el("span",{class:"lab"},v),el("div",{style:"display:flex"},tr),el("span",{class:"v"},String(n)));
+    withTip(b,`${v} : ${n} film${n>1?"s":""} · moyenne ${fmt1(avg(items))} · ${rateBreak(items)}`);
+    b.addEventListener("click",()=>{S[k]=S[k]===v?null:v;S.shown=40;update();});box.append(b);});
+}
+let TAGTAB="sg";
+function renderPeople(){renderTop("dirs","dir",12);renderTop("cast","cast",12);renderTop("countries","co",12);renderTop("tags",TAGTAB,15);renderEnr();}
+
 function sorted(){
   const a=sel(),key=f=>(f.y||0)*10000+(f.m||0)*100+(f.d||0);
   const strip=s=>norm(s).replace(/^(le|la|les|l'|the|un|une|a) /,"");
   if(S.sort==="date")a.sort((x,y)=>key(y)-key(x)||(y.ts||0)-(x.ts||0));
   if(S.sort==="rate")a.sort((x,y)=>(y.r||0)-(x.r||0)||key(y)-key(x));
-  if(S.sort==="release")a.sort((x,y)=>(x.ry||decOf(x)||0)-(y.ry||decOf(y)||0));
+  if(S.sort==="release")a.sort((x,y)=>(x.ry||decOf(x)||9999)-(y.ry||decOf(y)||9999));
+  if(S.sort==="release_desc")a.sort((x,y)=>(y.ry||decOf(y)||0)-(x.ry||decOf(x)||0));
   if(S.sort==="title")a.sort((x,y)=>strip(x.t).localeCompare(strip(y.t),"fr"));
   return a;
 }
@@ -552,7 +648,7 @@ function renderList(){
     wantPoster(f);
     if(S.view==="list"){
       const title=el("div",{class:"ft"},f.t);if(f.ty&&f.ty!=="Film")title.append(el("span",{class:"pill"},f.ty));
-      const meta=el("div",{class:"fm"},`${f.ry||(decOf(f)?"années "+String(decOf(f)).slice(2):"année ?")} · ${f.g||"sans genre"}`);
+      const meta=el("div",{class:"fm"},`${f.ry||(decOf(f)?"années "+String(decOf(f)).slice(2):"année ?")} · ${f.g||"sans genre"}${f.dir&&f.dir.length?" · "+f.dir.join(", "):""}`);
       ul.append(el("li",{},el("button",{type:"button",class:"frow",onclick:()=>openSheet(f)},posterBox(f),
         el("div",{},title,meta,f.c?el("div",{class:"fc"},f.c):null),
         el("div",{class:"fw"},dot(rk(f)),f.r?el("span",{},whenTxt(f)):el("span",{class:"todo"},"à noter"),f.r?null:el("span",{},whenTxt(f))))));
@@ -562,15 +658,20 @@ function renderList(){
   });
   const more=document.getElementById("more");more.style.display=a.length>S.shown?"block":"none";more.textContent=`Afficher plus (${a.length-S.shown} restants)`;
 }
-function update(){renderFilters();renderKpis();renderHeat();renderGenres();renderRates();renderDecades();renderList();renderWL();}
-const W={q:"",sort:"added",shown:30};
+function update(){renderFilters();renderKpis();renderHeat();renderGenres();renderRates();renderDecades();renderDecBest();renderPeople();renderList();renderWL();}
+const W={q:"",sort:"added",dec:"",shown:30};
 function renderWL(){
   let a=WL.map((w,i)=>({...w,_i:i}));
-  if(W.q){const q=norm(W.q);a=a.filter(w=>norm(w.t).includes(q));}
+  const wdecs=countBy(WL.filter(w=>w.ry),w=>Math.floor(w.ry/10)*10),ws=$("wdec");
+  ws.replaceChildren(el("option",{value:""},"Toutes décennies"),...[...wdecs.keys()].sort().map(d=>el("option",{value:String(d)},`Années ${d} (${wdecs.get(d)})`)));
+  if(W.dec&&!wdecs.has(+W.dec))W.dec="";ws.value=W.dec;
+  if(W.dec)a=a.filter(w=>w.ry&&Math.floor(w.ry/10)*10===+W.dec);
+  if(W.q){const q=norm(W.q);a=a.filter(w=>/^\d{4}$/.test(W.q)?w.ry===+W.q:norm(w.t).includes(q));}
   const strip=s=>norm(s).replace(/^(le|la|les|l'|the|un|une|a) /,"");
   if(W.sort==="added")a.sort((x,y)=>(y.ts||0)-(x.ts||0)||y._i-x._i);
   if(W.sort==="title")a.sort((x,y)=>strip(x.t).localeCompare(strip(y.t),"fr"));
-  if(W.sort==="release")a.sort((x,y)=>(x.ry||0)-(y.ry||0));
+  if(W.sort==="release")a.sort((x,y)=>(x.ry||9999)-(y.ry||9999));
+  if(W.sort==="release_desc")a.sort((x,y)=>(y.ry||0)-(x.ry||0));
   $("wlSub").textContent=`${WL.length} film${WL.length>1?"s":""} à voir. « Vu » le fait passer dans ta liste avec la date du jour.`;
   const ul=$("wlist");ul.replaceChildren();
   if(!a.length)ul.append(el("li",{class:"empty",style:"display:block"},WL.length?"Aucun titre ne correspond.":"Rien à voir pour l'instant."));
@@ -601,6 +702,7 @@ async function openSheet(f){
   $("sTitleH").textContent=f?"Modifier":"Nouveau film";
   $("sT").value=draft.t||"";$("sD").value=draft.d||"";$("sM").value=draft.m?String(draft.m):"";$("sY").value=draft.y||"";
   $("sRy").value=draft.ry||"";$("sTy").value=draft.ty||"Film";$("sG").value=draft.g||"";$("sC").value=draft.c||"";
+  fillWdFields();$("sWdBtn").textContent="Compléter automatiquement";
   $("genreList").replaceChildren(...[...new Set(FILMS.map(x=>x.g).filter(Boolean))].sort().map(g=>el("option",{value:g})));
   $("pLinkBox").hidden=true;$("pUrl").value=draft.pu||"";$("sDel").style.display=f?"":"none";$("sConfirm").classList.remove("on");
   renderSheetRates();fillPoster($("sPoster"),draft);
@@ -612,14 +714,17 @@ function readForm(){
   const n=v=>{const x=parseInt(v,10);return Number.isFinite(x)?x:undefined;};
   draft.t=$("sT").value.trim();draft.d=n($("sD").value);draft.m=n($("sM").value);draft.y=n($("sY").value);
   draft.ry=n($("sRy").value);draft.ty=$("sTy").value;draft.g=$("sG").value.trim()||undefined;draft.c=$("sC").value.trim()||undefined;
+  for(const[k,id]of WDF){const v=$(id).value.split(",").map(x=>x.trim()).filter(Boolean);draft[k]=v.length?v:undefined;}
   if(!draft.m)draft.d=undefined;if(draft.ry)draft.dec=Math.floor(draft.ry/10)*10;
   const u=$("pUrl").value.trim();draft.pu=u||undefined;
 }
 $("sSave").addEventListener("click",()=>{
   readForm();if(!draft.t){$("sT").focus();$("sT").placeholder="Il faut un titre";return;}
+  if(cur&&(cur.t!==draft.t||cur.ry!==draft.ry)&&WDF.every(([k])=>String(cur[k]||"")===String(draft[k]||""))){draft.wd=undefined;WDF.forEach(([k])=>draft[k]=undefined);}
   if(cur){const i=FILMS.indexOf(cur);FILMS[i]=draft;}else FILMS.push(draft);
   if(fromWL){WL=WL.filter(x=>x.id!==fromWL);fromWL=null;}
   const f=draft;closeSheet();save();update();if(!posterSrc(f))wantPoster(f);
+  if(ONLINE&&f.wd===undefined&&!WDF.some(([k])=>f[k]))enrichOne(f).then(ok=>{if(ok){save();update();}}).catch(()=>{});
 });
 $("sCancel").addEventListener("click",closeSheet);$("sClose").addEventListener("click",closeSheet);
 $("ov").addEventListener("click",e=>{if(e.target.id==="ov")closeSheet();});
@@ -648,6 +753,9 @@ $("kov").addEventListener("click",e=>{if(e.target.id==="kov")closeKey(false);});
 $("addTop").addEventListener("click",()=>openSheet(null));
 $("wq").addEventListener("input",e=>{W.q=e.target.value.trim();W.shown=30;renderWL();});
 $("wsort").addEventListener("change",e=>{W.sort=e.target.value;renderWL();});
+$("wdec").addEventListener("change",e=>{W.dec=e.target.value;W.shown=30;renderWL();});
+$("tSg").addEventListener("click",()=>{TAGTAB="sg";$("tSg").setAttribute("aria-pressed","true");$("tTh").setAttribute("aria-pressed","false");renderTop("tags","sg",15);});
+$("tTh").addEventListener("click",()=>{TAGTAB="th";$("tTh").setAttribute("aria-pressed","true");$("tSg").setAttribute("aria-pressed","false");renderTop("tags","th",15);});
 $("wmore").addEventListener("click",()=>{W.shown+=50;renderWL();});
 $("wAdd").addEventListener("click",async()=>{const t=$("wT").value.trim();if(!t){$("wT").focus();return;}if(!(await ensureKey()))return;
   const y=parseInt($("wY").value,10);WL.unshift({id:"w-"+Date.now().toString(36),t,ry:Number.isFinite(y)?y:undefined,ts:Date.now()});$("wT").value="";$("wY").value="";save();renderWL();});
@@ -659,6 +767,94 @@ $("more").addEventListener("click",()=>{S.shown+=60;renderList();});
 $("vList").addEventListener("click",()=>{S.view="list";$("vList").setAttribute("aria-pressed","true");$("vGrid").setAttribute("aria-pressed","false");renderList();});
 $("vGrid").addEventListener("click",()=>{S.view="grid";$("vGrid").setAttribute("aria-pressed","true");$("vList").setAttribute("aria-pressed","false");renderList();});
 $("fab").addEventListener("click",()=>openSheet(null));
+
+/* ---------- fiches enrichies (Wikidata) ---------- */
+// Cinéastes, casting, pays, sous-genres et thèmes viennent de Wikidata (données libres), cherchés depuis le navigateur.
+const WDF=[["dir","sDir"],["cast","sCast"],["co","sCo"],["sg","sSg"],["th","sTh"]];
+const FILMQ=new Set(["Q11424","Q24869","Q202866","Q93204","Q24862","Q506240","Q5398426","Q1259759","Q229390","Q20650540","Q526877","Q581714","Q117467246","Q226730","Q1261214","Q17517379","Q21191270"]);
+const SG_SKIP=new Set(["film","film dramatique","drame","comedie","film comique","comedie dramatique","film de fiction","fiction","oeuvre de fiction","long metrage","feature film","drama film","comedy film"]);
+const cap=x=>x?x[0].toUpperCase()+x.slice(1):x;
+async function wdApi(params){const r=await fetch("https://www.wikidata.org/w/api.php?"+new URLSearchParams({format:"json",origin:"*",...params}));if(!r.ok)throw new Error("wikidata "+r.status);return r.json();}
+async function sparql(q){const r=await fetch("https://query.wikidata.org/sparql?format=json&query="+encodeURIComponent(q));if(!r.ok)throw new Error("sparql "+r.status);return r.json();}
+const qid=u=>String(u).split("/").pop();
+async function wdCandidates(list){
+  const ids=list.filter(q=>/^Q\d+$/.test(q));if(!ids.length)return new Map();
+  const j=await sparql(`SELECT ?item ?k ?v ?vLabel ?yr WHERE { VALUES ?item { ${ids.map(q=>"wd:"+q).join(" ")} }
+    { ?item wdt:P31 ?v. BIND("P31" AS ?k) } UNION { ?item wdt:P577 ?d. BIND(YEAR(?d) AS ?yr) BIND("P577" AS ?k) }
+    UNION { ?item wdt:P57 ?v. BIND("dir" AS ?k) } UNION { ?item wdt:P495 ?v. BIND("co" AS ?k) }
+    UNION { ?item wdt:P136 ?v. BIND("sg" AS ?k) } UNION { ?item wdt:P921 ?v. BIND("th" AS ?k) }
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "fr,en,mul". } }`);
+  const m=new Map(ids.map(q=>[q,{types:new Set(),years:[],dir:[],co:[],sg:[],th:[]}]));
+  for(const b of j.results.bindings){const e=m.get(qid(b.item.value));if(!e)continue;const k=b.k.value;
+    if(k==="P31")e.types.add(qid(b.v.value));
+    else if(k==="P577"){if(b.yr)e.years.push(parseInt(b.yr.value,10));}
+    else{const l=b.vLabel&&b.vLabel.value;if(l&&!/^Q\d+$/.test(l)&&!e[k].includes(l))e[k].push(l);}}
+  return m;
+}
+async function wdSearch(q,lang){const j=await wdApi({action:"wbsearchentities",search:q,language:lang,uselang:"fr",type:"item",limit:"7"});return (j.search||[]).map(s=>s.id);}
+function wdPick(f,list,m){
+  let best=null,bs=-1e9;
+  list.forEach((q,i)=>{const e=m.get(q);if(!e||![...e.types].some(t=>FILMQ.has(t)))return;
+    const y=e.years.length?Math.min(...e.years):null;let s=-i;
+    if(f.ry){if(y==null)s-=20;else{const d=Math.abs(y-f.ry);if(d>1)return;s+=d?10:20;}}
+    if(s>bs){bs=s;best=[q,e];}});
+  return best;
+}
+async function wdMatch(f){
+  const full=(f.t||"").trim(),base=full.replace(/\s*\([^)]*\)\s*$/,"").trim(),m=full.match(/\(([^)]+)\)\s*$/);
+  if(!base)return null;
+  const tries=[[base,"fr"],[base,"en"]];if(m&&!/^\d{4}$/.test(m[1]))tries.push([m[1],"en"]);
+  for(const[q,lang]of tries){const list=await wdSearch(q,lang);if(!list.length)continue;
+    const hit=wdPick(f,list,await wdCandidates(list));if(!hit)continue;
+    const[id,e]=hit;
+    const cl=await wdApi({action:"wbgetclaims",entity:id,property:"P161"});
+    const castIds=((cl.claims&&cl.claims.P161)||[]).filter(c=>c.rank!=="deprecated"&&c.mainsnak&&c.mainsnak.datavalue).map(c=>c.mainsnak.datavalue.value.id).filter((x,i,a)=>x&&a.indexOf(x)===i).slice(0,8);
+    let cast=[];
+    if(castIds.length){const lj=await wdApi({action:"wbgetentities",ids:castIds.join("|"),props:"labels",languages:"fr|en",languagefallback:"1"});
+      cast=castIds.map(q=>{const l=(lj.entities&&lj.entities[q]&&lj.entities[q].labels)||{};return (l.fr||l.en||Object.values(l)[0]||{}).value;}).filter(Boolean);}
+    const g=norm(f.g||"");
+    return {wd:id,dir:e.dir,cast,co:e.co,sg:e.sg.filter(x=>!SG_SKIP.has(norm(x))&&norm(x)!==g).map(cap),th:e.th.map(cap)};
+  }
+  return null;
+}
+async function enrichOne(f){
+  const r=await wdMatch(f);const tgt=FILMS.find(x=>x.id===f.id)||f;
+  if(!r){tgt.wd="";return false;}
+  tgt.wd=r.wd;for(const[k]of WDF){if(!(tgt[k]&&tgt[k].length)&&r[k].length)tgt[k]=r[k];}
+  return true;
+}
+const ENR={running:false,stop:false,done:0,total:0,err:""};
+async function runEnrich(){
+  if(ENR.running||!(await ensureKey()))return;
+  const todo=FILMS.filter(f=>f.wd===undefined);if(!todo.length)return;
+  Object.assign(ENR,{running:true,stop:false,done:0,total:todo.length,err:""});renderEnr();
+  let i=0;
+  const worker=async()=>{while(!ENR.stop&&i<todo.length){const f=todo[i++];
+    try{await enrichOne(f);}catch(e){ENR.err="Wikidata ne répond pas pour l'instant, réessaie plus tard.";ENR.stop=true;break;}
+    ENR.done++;if(ENR.done%10===0){save();renderPeople();}else renderEnr();}};
+  await Promise.all([worker(),worker()]);
+  ENR.running=false;save();update();
+}
+function renderEnr(){
+  const box=document.getElementById("enr");if(!box)return;box.replaceChildren();
+  const ok=FILMS.filter(f=>f.wd).length,nf=FILMS.filter(f=>f.wd==="").length,todo=FILMS.filter(f=>f.wd===undefined).length;
+  if(ENR.running){box.append(`Recherche sur Wikidata… ${ENR.done} / ${ENR.total}`,el("button",{class:"btn",type:"button",onclick:()=>{ENR.stop=true;}},"Arrêter"));return;}
+  box.append(`${ok} fiche${ok>1?"s":""} complétée${ok>1?"s":""} sur ${FILMS.length}.`);
+  if(todo&&ONLINE)box.append(el("button",{class:"btn primary",type:"button",onclick:runEnrich},`Compléter les fiches (${todo})`));
+  if(nf)box.append(el("button",{class:"btn",type:"button",onclick:()=>{S.nf=!S.nf;S.shown=40;update();if(S.nf)document.getElementById("sec-liste").scrollIntoView({behavior:"smooth",block:"start"});}},`${S.nf?"Masquer":"Voir"} les ${nf} introuvables`));
+  if(ENR.err)box.append(el("span",{style:"color:var(--r1)"},ENR.err));
+}
+function fillWdFields(){
+  for(const[k,id]of WDF)$(id).value=(draft[k]||[]).join(", ");
+  const w=$("sWd");w.replaceChildren();
+  if(draft.wd)w.append(el("a",{href:`https://www.wikidata.org/wiki/${draft.wd}`,target:"_blank",rel:"noopener"},"Fiche Wikidata"));
+  else if(draft.wd==="")w.append("Introuvable sur Wikidata : vérifie le titre et l'année, ou remplis à la main.");
+}
+$("sWdBtn").addEventListener("click",async()=>{readForm();const b=$("sWdBtn");b.textContent="Recherche…";
+  try{const r=await wdMatch(draft);
+    if(r){draft.wd=r.wd;WDF.forEach(([k])=>draft[k]=r[k].length?r[k]:undefined);b.textContent="Compléter automatiquement";}
+    else{draft.wd="";b.textContent="Rien trouvé";}
+    fillWdFields();}catch(_){b.textContent="Recherche impossible ici";}});
 
 /* ---------- sauvegarde ---------- */
 function download(name,text,type){try{const a=el("a",{href:URL.createObjectURL(new Blob([text],{type})),download:name});document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);return true;}catch(e){return false;}}
@@ -679,7 +875,7 @@ const stamp=()=>new Date().toISOString().slice(0,10);
   update();
 })();
 document.addEventListener("visibilitychange",async()=>{
-  if(document.visibilityState!=="visible"||!ONLINE||pending||$("ov").classList.contains("open"))return;
+  if(document.visibilityState!=="visible"||!ONLINE||pending||ENR.running||$("ov").classList.contains("open"))return;
   try{const srv=await serverLoad();if(!srv.empty&&srv.savedAt>lastServer){FILMS=srv.films;WL=srv.watchlist||[];lastServer=srv.savedAt;KV.set("state",{savedAt:srv.savedAt,films:FILMS,pending:false});update();setStatus(`Mis à jour depuis un autre appareil à ${hhmm()}.`);}}catch(_){}
 });
 addEventListener("online",()=>{if(ONLINE&&pending)doSave();});

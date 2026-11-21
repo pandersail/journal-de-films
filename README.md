@@ -9,9 +9,11 @@ Live site: https://journal-de-films.netlify.app
 - **Colour ratings** instead of stars:
   violet (very good, would rewatch), green (good), blue (fine), orange (meh), red (disliked), or unrated.
 - **Dashboard**: key figures, a month-by-year heatmap, cumulative months, genres, rating breakdown and release decades.
-- **Cross-filtering**: click a year, a rating, a type, a month, a genre or a decade and every view follows.
+- **Best-rated decades**: average rating per release decade.
+- **Directors, cast, countries, sub-genres and themes**: most-watched charts, filled from [Wikidata](https://www.wikidata.org) with the "Compléter les fiches" button (run from the browser, editable by hand in each film sheet).
+- **Cross-filtering**: click a year, a rating, a type, a month, a genre, a decade, a person, a country or a theme and every view follows.
 - **List or poster view**, with search and sorting. Posters are found automatically on Wikipedia or uploaded by hand.
-- **"À voir" watchlist**: once a film is seen, it moves into the journal.
+- **"À voir" watchlist**: sort by release date (newest or oldest first), filter by decade, search by title or year. Once a film is seen, it moves into the journal.
 - **Letterboxd import**, applied once on the server with a backup taken beforehand.
 - Light and dark themes, mobile-first layout, offline fallback on the device.
 
